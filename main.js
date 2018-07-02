@@ -5,6 +5,16 @@ const {app, BrowserWindow} = require('electron')
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
+const hasWindow = app.makeSingleInstance(function(commandLine, workingDirectory) {
+    mainWindow.show()
+    mainWindow.focus()
+    return true
+})
+
+if(hasWindow) {
+    app.quit()
+    return
+}
 
 function createWindow () {
   // Create the browser window.

@@ -1,6 +1,6 @@
 import style from './Item.less';
 import React, {Component} from 'react';
-import {Card, Button, Icon} from 'antd';
+import {Card, Button, Icon, Spin} from 'antd';
 
 const Log = function(props){
     return (
@@ -15,6 +15,7 @@ export default class App extends Component {
         super()
         this.state = {
             start:false,
+            loading:false,
             access:[],
             error:[]
         }
@@ -26,10 +27,14 @@ export default class App extends Component {
     }
 
     switch = (e)=>{
+        this.setState({
+            loading:true
+        })
         if(this.state.start){
             Process.exec(this.cmd('-s stop'), (err)=>{
                 if(!err){
                     this.setState({
+                        loading:false,
                         start:false
                     })
                 }
@@ -37,14 +42,24 @@ export default class App extends Component {
         }
         else{
             Process.exec(this.cmd('-c conf/nginx.conf'))
-            this.setState({
-                start:true
-            })
+            setTimeout(()=>{
+                this.setState({
+                    start:true,
+                    loading:false
+                })
+            }, 100)
         }
     }
 
     reload = (e)=>{
-        Process.exec(this.cmd('-s reload'))
+        this.setState({
+            loading:true
+        })
+        Process.exec(this.cmd('-s reload'), ()=>{
+            this.setState({
+                loading:false
+            })
+        })
     }
 
     edit = (e)=>{
@@ -81,10 +96,19 @@ export default class App extends Component {
     updateStatusOnPid(){
         Fs.readFile(this.props.data.pid, (err, data)=>{
             if(!err){
+                this.setState({
+                    loading:true
+                })
                 Process.exec('tasklist|findstr ' + data.toString(), (error, stdout, stderr)=>{
                     if(!error){
                         this.setState({
+                            loading:false,
                             start:true
+                        })
+                    }
+                    else{
+                        this.setState({
+                            loading:false
                         })
                     }
                 })
@@ -112,38 +136,40 @@ export default class App extends Component {
         const state = this.state;
         return (
             <div className={style.card}>
-                <Card 
-                    className={state.start ? style.start : ''}
-                    title={
-                        <span>
-                            <Button 
-                                type={state.start ? '' : 'primary'} 
-                                onClick={this.switch}>
-                                <Icon type={state.start ? 'poweroff' : 'play-circle-o'}  />
-                                {state.start ? '停止' : '启动'}
-                            </Button>
-                            <Button 
-                                style={{marginLeft:16, display:state.start ? 'inline-block' : 'none'}}
-                                onClick={this.reload}>
-                                <Icon type="reload" />
-                                重启
-                            </Button>
-                        </span>
-                    } 
-                    extra={
-                        <span>
-                            <Button onClick={this.edit}><Icon type="edit" />编辑配置</Button>
-                            <Button onClick={this.open} style={{marginLeft:16}}><Icon type="folder-open" />打开目录</Button>
-                            <Button type="danger" onClick={this.remove} style={{marginLeft:16}}><Icon type="delete" />删除</Button>
-                        </span>
-                    }>
-                    <div className={style.access}>
-                        <div ref="access"><Log data={state.access} /></div>
-                    </div>
-                    <div className={style.error}>
-                        <div ref="error"><Log data={state.error} /></div>
-                    </div>
-                </Card>
+                <Spin spinning={this.state.loading}>
+                    <Card 
+                        className={state.start ? style.start : ''}
+                        title={
+                            <span>
+                                <Button 
+                                    type={state.start ? '' : 'primary'} 
+                                    onClick={this.switch}>
+                                    <Icon type={state.start ? 'poweroff' : 'play-circle-o'}  />
+                                    {state.start ? '停止' : '启动'}
+                                </Button>
+                                <Button 
+                                    style={{marginLeft:16, display:state.start ? 'inline-block' : 'none'}}
+                                    onClick={this.reload}>
+                                    <Icon type="reload" />
+                                    重启
+                                </Button>
+                            </span>
+                        } 
+                        extra={
+                            <span>
+                                <Button onClick={this.edit}><Icon type="edit" />编辑配置</Button>
+                                <Button onClick={this.open} style={{marginLeft:16}}><Icon type="folder-open" />打开目录</Button>
+                                <Button type="danger" onClick={this.remove} style={{marginLeft:16}}><Icon type="delete" />删除</Button>
+                            </span>
+                        }>
+                        <div className={style.access}>
+                            <div ref="access"><Log data={state.access} /></div>
+                        </div>
+                        <div className={style.error}>
+                            <div ref="error"><Log data={state.error} /></div>
+                        </div>
+                    </Card>
+                </Spin>
             </div> 
         )
     }
