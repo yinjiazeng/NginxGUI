@@ -24,3 +24,14 @@
         cursor: pointer;
     }
 }
+
+:global {
+    .ant-dropdown {
+        width:auto !important;
+        min-width: auto !important;
+        position: static !important;
+        .ant-dropdown-menu {
+            position: fixed !important;
+        }
+    }
+}

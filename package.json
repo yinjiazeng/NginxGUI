@@ -36,6 +36,8 @@
     "less-loader": "^4.1.0",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
+    "react-redux": "^5.0.7",
+    "redux": "^4.0.0",
     "resolve-url-loader": "^2.3.0",
     "style-loader": "^0.20.3",
     "uglifyjs-webpack-plugin": "^1.2.4",

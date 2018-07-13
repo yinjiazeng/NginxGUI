@@ -1,6 +1,8 @@
 import style from './Item.less';
 import React, {Component} from 'react';
 import {Card, Button, Icon, Spin} from 'antd';
+import Clear from './Clear';
+import store from '../public/store';
 
 const Log = function(props){
     return (
@@ -78,7 +80,8 @@ export default class App extends Component {
         const file = this.props.data[type];
         Fs.readFile(file, (err, data)=>{
             if(!err){
-                this.setState({
+                store.dispatch({
+                    type:'CHANGE_' + type.toLocaleUpperCase(),
                     [type]:data.toString().split(/\n/g).slice(-30)
                 })
                 this.refs[type].scrollTop = 19920604
@@ -117,6 +120,12 @@ export default class App extends Component {
     }
 
     componentDidMount(){
+
+        this.unsubscribe = store.subscribe(()=>{
+            const state = store.getState();
+            this.setState(state)
+        });
+
         ['access', 'error'].forEach((v)=>{
             this.showLog(v);
             this.watch(v);
@@ -125,6 +134,7 @@ export default class App extends Component {
     }
 
     componentWillUnmount(){
+        this.unsubscribe()
         //取消文件监听
         ['access', 'error'].forEach((v)=>{
             Fs.unwatchFile(this.props.data[v])
@@ -134,6 +144,7 @@ export default class App extends Component {
 
     render(){
         const state = this.state;
+        const props = this.props;
         return (
             <div className={style.card}>
                 <Spin spinning={this.state.loading}>
@@ -163,10 +174,16 @@ export default class App extends Component {
                             </span>
                         }>
                         <div className={style.access}>
-                            <div ref="access"><Log data={state.access} /></div>
+                            {state.access[0] ? <Clear type="access" url={props.data.access} /> : ''}
+                            <div ref="access">
+                                <Log data={state.access} />
+                            </div>
                         </div>
                         <div className={style.error}>
-                            <div ref="error"><Log data={state.error} /></div>
+                            {state.error[0] ? <Clear type="error" url={props.data.error} /> : ''}
+                            <div ref="error">
+                                <Log data={state.error} />
+                            </div>
                         </div>
                     </Card>
                 </Spin>
