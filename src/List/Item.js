@@ -134,7 +134,7 @@ export default class App extends Component {
     }
 
     componentWillUnmount(){
-        this.unsubscribe()
+        this.unsubscribe();
         //取消文件监听
         ['access', 'error'].forEach((v)=>{
             Fs.unwatchFile(this.props.data[v])
