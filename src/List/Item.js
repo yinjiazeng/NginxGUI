@@ -34,12 +34,10 @@ export default class App extends Component {
         })
         if(this.state.start){
             Process.exec(this.cmd('-s stop'), (err)=>{
-                if(!err){
-                    this.setState({
-                        loading:false,
-                        start:false
-                    })
-                }
+                this.setState({
+                    loading:false,
+                    start:false
+                })
             })
         }
         else{
@@ -97,23 +95,22 @@ export default class App extends Component {
     }
 
     updateStatusOnPid(){
+        this.setState({
+            loading:true
+        })
         Fs.readFile(this.props.data.pid, (err, data)=>{
             if(!err){
-                this.setState({
-                    loading:true
-                })
+                //根据进程id检测当前nginx是否已经启动
                 Process.exec('tasklist|findstr ' + data.toString(), (error, stdout, stderr)=>{
-                    if(!error){
-                        this.setState({
-                            loading:false,
-                            start:true
-                        })
-                    }
-                    else{
-                        this.setState({
-                            loading:false
-                        })
-                    }
+                    this.setState({
+                        loading:false,
+                        start:!error
+                    })
+                })
+            }
+            else{
+                this.setState({
+                    loading:false
                 })
             }
         })
