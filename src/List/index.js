@@ -16,8 +16,8 @@ export default class App extends Component {
     }
 
     render(){
-        //选择文件后重新渲染
-        var File = ()=>{
+        //选择文件后重新渲染，不然之前选择的文件就无法选择
+        const File = ()=>{
             return <input type="file" title="点击添加nginx" onChange={this.change} accept="application/octet-stream" />
         }
         return (

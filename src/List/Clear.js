@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import {Button, Icon} from 'antd';
-import store from '../public/store';
 
 export default class App extends Component {
 
@@ -18,19 +17,19 @@ export default class App extends Component {
                 this.setState({
                     loading:false
                 })
-                if(!err){
-                    store.dispatch({
-                        type:'CHANGE_' + props.type.toLocaleUpperCase(),
-                        [props.type]:[]
-                    })
-                }
+                props.item.setState({
+                    [props.type]:[]
+                })
             })
         }
     }
 
     render(){
         return (
-            <Button size="small" onClick={this.clear}><Icon type={!this.state.loading ? 'close' : 'loading'} />清空日志</Button>
+            <Button size="small" onClick={this.clear}>
+                <Icon type={!this.state.loading ? 'close' : 'loading'} />
+                清空日志
+            </Button>
         )
     }
 }

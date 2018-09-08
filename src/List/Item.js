@@ -2,25 +2,21 @@ import style from './Item.less';
 import React, {Component} from 'react';
 import {Card, Button, Icon, Spin} from 'antd';
 import Clear from './Clear';
-import store from '../public/store';
 
 const Log = function(props){
     return (
-        props.data.map((v)=>{
-           return <p key={v}>{v}</p>
+        props.data.map((v, i)=>{
+           return <p key={i}>{v}</p>
         })
     )
 }
 
 export default class App extends Component {
-    constructor(){
-        super()
-        this.state = {
-            start:false,
-            loading:false,
-            access:[],
-            error:[]
-        }
+    state = {
+        start:false,
+        loading:false,
+        access:[],
+        error:[]
     }
 
     cmd(type){
@@ -33,6 +29,7 @@ export default class App extends Component {
             loading:true
         })
         if(this.state.start){
+            //停止
             Process.exec(this.cmd('-s stop'), (err)=>{
                 this.setState({
                     loading:false,
@@ -41,6 +38,7 @@ export default class App extends Component {
             })
         }
         else{
+            //启动
             Process.exec(this.cmd('-c conf/nginx.conf'))
             setTimeout(()=>{
                 this.setState({
@@ -55,6 +53,7 @@ export default class App extends Component {
         this.setState({
             loading:true
         })
+        //重启
         Process.exec(this.cmd('-s reload'), ()=>{
             this.setState({
                 loading:false
@@ -78,23 +77,16 @@ export default class App extends Component {
         const file = this.props.data[type];
         Fs.readFile(file, (err, data)=>{
             if(!err){
-                store.dispatch({
-                    type:'CHANGE_' + type.toLocaleUpperCase(),
+                this.setState({
                     [type]:data.toString().split(/\n/g).slice(-30)
+                }, ()=>{
+                    this.refs[type].scrollTop = 19920604
                 })
-                this.refs[type].scrollTop = 19920604
             }
         })
     }
 
-    watch(type){
-        const file = this.props.data[type];
-        Fs.watchFile(file, ()=>{
-            this.showLog(type)
-        })
-    }
-
-    updateStatusOnPid(){
+    updateStatusByPid(){
         this.setState({
             loading:true
         })
@@ -117,21 +109,16 @@ export default class App extends Component {
     }
 
     componentDidMount(){
-
-        this.unsubscribe = store.subscribe(()=>{
-            const state = store.getState();
-            this.setState(state)
-        });
-
         ['access', 'error'].forEach((v)=>{
-            this.showLog(v);
-            this.watch(v);
+            this.showLog(v)
+            Fs.watchFile(this.props.data[v], ()=>{
+                this.showLog(v)
+            })
         })
-        this.updateStatusOnPid()
+        this.updateStatusByPid()
     }
 
     componentWillUnmount(){
-        this.unsubscribe();
         //取消文件监听
         ['access', 'error'].forEach((v)=>{
             Fs.unwatchFile(this.props.data[v])
@@ -167,17 +154,17 @@ export default class App extends Component {
                             <span>
                                 <Button onClick={this.edit}><Icon type="edit" />编辑配置</Button>
                                 <Button onClick={this.open} style={{marginLeft:16}}><Icon type="folder-open" />打开目录</Button>
-                                <Button type="danger" onClick={this.remove} style={{marginLeft:16}}><Icon type="delete" />删除</Button>
+                                <Button onClick={this.remove} style={{marginLeft:16}} type="danger"><Icon type="delete" />删除</Button>
                             </span>
                         }>
                         <div className={style.access}>
-                            {state.access[0] ? <Clear type="access" url={props.data.access} /> : ''}
+                            {state.access[0] ? <Clear item={this} type="access" url={props.data.access} /> : ''}
                             <div ref="access">
                                 <Log data={state.access} />
                             </div>
                         </div>
                         <div className={style.error}>
-                            {state.error[0] ? <Clear type="error" url={props.data.error} /> : ''}
+                            {state.error[0] ? <Clear item={this} type="error" url={props.data.error} /> : ''}
                             <div ref="error">
                                 <Log data={state.error} />
                             </div>
