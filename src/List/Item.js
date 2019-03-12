@@ -21,7 +21,7 @@ export default class App extends Component {
 
     cmd(type){
         const data = this.props.data;
-        return 'cd ' + data.dir + ' && ' + data.path + ' -p '+ data.dir + ' ' + type
+        return 'cd ' + data.cmdDir + ' && ' + data.cmdPath + ' -p '+ data.cmdDir + ' ' + type
     }
 
     switch = (e)=>{

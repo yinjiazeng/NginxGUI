@@ -3,18 +3,26 @@ export default {
         let data = [];
         for(let file of files){
             if(file.name === 'nginx.exe'){
-                const path = file.path.replace(/\\/g, '/');
-                const dir = Path.dirname(path);
-                const logs = Path.join(dir, './logs/').replace(/\\/g, '/');
+                const path = Path.dirname(file.path).replace(/\\/g, '/');
+                const logs = path + '/logs';
+                //修复目录名称包含空格，会被当做命令处理问题，给带空格到目录名称加上引号
+                const cmdDir = path.replace(/[^\/]+/g, (str) => {
+                    if(/\s+/.test(str)){
+                        return `"${str}"`
+                    }
+                    return str
+                });
                 data.push({
-                    path,
-                    dir,
+                    cmdDir,
                     logs,
                     name:file.name,
-                    conf:Path.join(dir, './conf/nginx.conf').replace(/\\/g, '/'),
-                    access:`${logs}access.log`,
-                    error:`${logs}error.log`,
-                    pid:`${logs}nginx.pid`
+                    cmdPath:`${cmdDir}/nginx.exe`,
+                    cmdConf:`${cmdDir}/conf/nginx.conf`,
+                    path:`${path}/nginx.exe`,
+                    conf:`${path}/conf/nginx.conf`,
+                    access:`${logs}/access.log`,
+                    error:`${logs}/error.log`,
+                    pid:`${logs}/nginx.pid`
                 })
             }
         }
