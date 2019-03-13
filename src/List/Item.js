@@ -115,16 +115,19 @@ export default class App extends Component {
         const {data} = this.props;
         ['access', 'error'].forEach((v)=>{
             this.showLog(v)
-            fs.watchFile(data[v], ()=>{
-                this.showLog(v)
+            let timer;
+            this['watch' + v] = fs.watch(data[v], ()=>{
+                clearTimeout(this[v])
+                this[v] = setTimeout(() =>{
+                    this.showLog(v)
+                }, 100)
             })
         })
         //监听配置文件修改，自动重启
-        let timer;
-        this.watchConf = fs.watch(data.conf, ()=>{
-            clearTimeout(timer)
+        this.watchconf = fs.watch(data.conf, ()=>{
+            clearTimeout(this.conf)
             //防止多次执行
-            timer = setTimeout(() =>{
+            this.conf = setTimeout(() =>{
                 if(this.state.start){
                     this.reload()
                 }
@@ -136,10 +139,9 @@ export default class App extends Component {
     componentWillUnmount(){
         const {data} = this.props;
         //取消文件监听
-        ['access', 'error'].forEach((v)=>{
-            fs.unwatchFile(data[v])
+        ['access', 'error', 'conf'].forEach((v)=>{
+            this['watch' + v].close();
         })
-        this.watchConf.close();
         process.exec(this.cmd('-s stop'))
     }
 

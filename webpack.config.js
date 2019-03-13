@@ -14,7 +14,16 @@ const ENV_DEV_SERVER = NODE_ENV === 'dev';
 let plugins = [
     new ExtractTextPlugin('style/[name].[chunkhash].css'),
     new webpack.optimize.CommonsChunkPlugin({
-      name:'common'
+      name:'common',
+      minChunks: function(module){
+        return (
+          module.resource &&
+          /\.js$/.test(module.resource) &&
+          module.resource.indexOf(
+            path.join(__dirname, './node_modules')
+          ) === 0
+        )
+      }
     }),
     new CleanWebpackPlugin(['./dist']),
     new HTMLWebpackPlugin({
