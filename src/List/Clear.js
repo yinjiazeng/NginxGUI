@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Button, Icon} from 'antd';
+import fs from 'fs';
 
 export default class App extends Component {
 
@@ -13,7 +14,7 @@ export default class App extends Component {
             this.setState({
                 loading:true
             })
-            Fs.writeFile(props.url, '', (err)=>{
+            fs.writeFile(props.url, '', (err)=>{
                 this.setState({
                     loading:false
                 })

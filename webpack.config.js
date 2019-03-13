@@ -40,6 +40,7 @@ if(!ENV_DEV_SERVER){
 
 module.exports = {
   entry:'./src/index',
+  target: 'electron-renderer',
   devServer:{
     port:8081,
     contentBase:'./dist'

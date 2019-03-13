@@ -2,6 +2,9 @@ import style from './Item.less';
 import React, {Component} from 'react';
 import {Card, Button, Icon, Spin} from 'antd';
 import Clear from './Clear';
+import {shell} from 'electron';
+import fs from 'fs';
+import process from 'child_process';
 
 const Log = function(props){
     return (
@@ -30,7 +33,7 @@ export default class App extends Component {
         })
         if(this.state.start){
             //停止
-            Process.exec(this.cmd('-s stop'), (err)=>{
+            process.exec(this.cmd('-s stop'), (err)=>{
                 this.setState({
                     loading:false,
                     start:false
@@ -39,7 +42,7 @@ export default class App extends Component {
         }
         else{
             //启动
-            Process.exec(this.cmd('-c conf/nginx.conf'))
+            process.exec(this.cmd('-c conf/nginx.conf'))
             setTimeout(()=>{
                 this.setState({
                     start:true,
@@ -54,7 +57,7 @@ export default class App extends Component {
             loading:true
         })
         //重启
-        Process.exec(this.cmd('-s reload'), ()=>{
+        process.exec(this.cmd('-s reload'), ()=>{
             this.setState({
                 loading:false
             })
@@ -62,7 +65,7 @@ export default class App extends Component {
     }
 
     edit = (e)=>{
-        Shell.openItem(this.props.data.conf)
+        shell.openItem(this.props.data.conf)
     }
 
     remove = (e)=>{
@@ -70,12 +73,12 @@ export default class App extends Component {
     }
 
     open = (e)=>{
-        Shell.showItemInFolder(this.props.data.path)
+        shell.showItemInFolder(this.props.data.path)
     }
 
     showLog(type){
         const file = this.props.data[type];
-        Fs.readFile(file, (err, data)=>{
+        fs.readFile(file, (err, data)=>{
             if(!err){
                 this.setState({
                     [type]:data.toString().split(/\n/g).slice(-30)
@@ -90,10 +93,10 @@ export default class App extends Component {
         this.setState({
             loading:true
         })
-        Fs.readFile(this.props.data.pid, (err, data)=>{
+        fs.readFile(this.props.data.pid, (err, data)=>{
             if(!err){
                 //根据进程id检测当前nginx是否已经启动
-                Process.exec('tasklist|findstr ' + data.toString(), (error, stdout, stderr)=>{
+                process.exec('tasklist|findstr ' + data.toString(), (error, stdout, stderr)=>{
                     this.setState({
                         loading:false,
                         start:!error
@@ -109,21 +112,35 @@ export default class App extends Component {
     }
 
     componentDidMount(){
+        const {data} = this.props;
         ['access', 'error'].forEach((v)=>{
             this.showLog(v)
-            Fs.watchFile(this.props.data[v], ()=>{
+            fs.watchFile(data[v], ()=>{
                 this.showLog(v)
             })
+        })
+        //监听配置文件修改，自动重启
+        let timer;
+        this.watchConf = fs.watch(data.conf, ()=>{
+            clearTimeout(timer)
+            //防止多次执行
+            timer = setTimeout(() =>{
+                if(this.state.start){
+                    this.reload()
+                }
+            }, 100)
         })
         this.updateStatusByPid()
     }
 
     componentWillUnmount(){
+        const {data} = this.props;
         //取消文件监听
         ['access', 'error'].forEach((v)=>{
-            Fs.unwatchFile(this.props.data[v])
+            fs.unwatchFile(data[v])
         })
-        Process.exec(this.cmd('-s stop'))
+        this.watchConf.close();
+        process.exec(this.cmd('-s stop'))
     }
 
     render(){
