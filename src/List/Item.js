@@ -8,8 +8,8 @@ import process from 'child_process';
 
 const Log = function(props){
     return (
-        props.data.map((v, i)=>{
-           return <p key={i}>{v}</p>
+        props.data.map((v, i) => {
+            return <p key={i}>{v}</p>
         })
     )
 }
@@ -24,125 +24,145 @@ export default class App extends Component {
 
     cmd(type){
         const data = this.props.data;
-        return 'cd ' + data.cmdDir + ' && ' + data.cmdPath + ' -p '+ data.cmdDir + ' ' + type
+        return 'cd ' + data.cmdDir + ' && ' + data.cmdPath + ' -p ' + data.cmdDir + ' ' + type;
     }
 
     switch = (e)=>{
         this.setState({
-            loading:true
-        })
+            loading: true
+        });
         if(this.state.start){
             //停止
-            process.exec(this.cmd('-s stop'), (err)=>{
+            process.exec(this.cmd('-s stop'), (err) => {
                 this.setState({
-                    loading:false,
-                    start:false
-                })
-            })
+                    loading: false,
+                    start: false
+                });
+            });
         }
         else{
             //启动
             process.exec(this.cmd('-c conf/nginx.conf'))
-            setTimeout(()=>{
+            setTimeout(() => {
                 this.setState({
-                    start:true,
-                    loading:false
-                })
-            }, 100)
+                    start: true,
+                    loading: false
+                });
+            }, 100);
         }
     }
 
     reload = (e)=>{
         this.setState({
-            loading:true
-        })
+            loading: true
+        });
         //重启
-        process.exec(this.cmd('-s reload'), ()=>{
+        process.exec(this.cmd('-s reload'), () => {
             this.setState({
-                loading:false
-            })
-        })
+                loading: false
+            });
+        });
     }
 
     edit = (e)=>{
-        shell.openItem(this.props.data.conf)
+        shell.openItem(this.props.data.conf);
     }
 
     remove = (e)=>{
-        this.props.remove(this.props.index)
+        this.props.remove(this.props.index);
     }
 
     open = (e)=>{
-        shell.showItemInFolder(this.props.data.path)
+        shell.showItemInFolder(this.props.data.path);
     }
 
-    showLog(type){
+    showLog(type, cb){
         const file = this.props.data[type];
-        fs.readFile(file, (err, data)=>{
-            if(!err){
+        fs.readFile(file, (err, data) => {
+            if (!err) {
                 this.setState({
-                    [type]:data.toString().split(/\n/g).slice(-30)
-                }, ()=>{
-                    this.refs[type].scrollTop = 19920604
-                })
+                    [type]: data.toString().split(/\n/g).slice(-30)
+                }, () => {
+                    this.refs[type].scrollTop = 19920604;
+                });
             }
-        })
+            cb && cb(err)
+        });
     }
 
     updateStatusByPid(){
         this.setState({
-            loading:true
-        })
-        fs.readFile(this.props.data.pid, (err, data)=>{
-            if(!err){
+            loading: true
+        });
+        fs.readFile(this.props.data.pid, (err, data) => {
+            if (!err) {
                 //根据进程id检测当前nginx是否已经启动
-                process.exec('tasklist|findstr ' + data.toString(), (error, stdout, stderr)=>{
+                process.exec('tasklist|findstr ' + data.toString(), (error, stdout, stderr) => {
                     this.setState({
-                        loading:false,
-                        start:!error
-                    })
-                })
+                        loading: false,
+                        start: !error
+                    });
+                });
             }
-            else{
+            else {
                 this.setState({
-                    loading:false
-                })
+                    loading: false
+                });
             }
-        })
+        });
     }
 
     componentDidMount(){
         const {data} = this.props;
-        ['access', 'error'].forEach((v)=>{
-            this.showLog(v)
-            let timer;
-            this['watch' + v] = fs.watch(data[v], ()=>{
-                clearTimeout(this[v])
-                this[v] = setTimeout(() =>{
-                    this.showLog(v)
-                }, 100)
-            })
-        })
+        ['access', 'error'].forEach((v) => {
+            const watch = (type, url) => { 
+                this['watch' + type] = fs.watch(url, () => {
+                    clearTimeout(this[type])
+                    this[type] = setTimeout(() => {
+                        this.showLog(type);
+                    }, 100);
+                });
+            }
+            ((_v) => {
+                const url = data[_v];
+                this.showLog(_v, (err) => {
+                    if (!err) {
+                        watch(_v, url);
+                    }
+                    // 文件不存在，先创建再监听
+                    else {
+                        fs.writeFile(url, '', (err) => {
+                            if (!err) {
+                                watch(_v, url);
+                            }
+                        });
+                    }
+                });
+            })(v);
+        });
         //监听配置文件修改，自动重启
-        this.watchconf = fs.watch(data.conf, ()=>{
+        this.watchconf = fs.watch(data.conf, () => {
             clearTimeout(this.conf)
             //防止多次执行
-            this.conf = setTimeout(() =>{
-                if(this.state.start){
-                    this.reload()
+            this.conf = setTimeout(() => {
+                if (this.state.start) {
+                    this.reload();
                 }
-            }, 100)
-        })
-        this.updateStatusByPid()
+            }, 100);
+        });
+        this.updateStatusByPid();
     }
 
     componentWillUnmount(){
         const {data} = this.props;
         //取消文件监听
-        ['access', 'error', 'conf'].forEach((v)=>{
-            this['watch' + v].close();
-        })
-        process.exec(this.cmd('-s stop'))
+        ['access', 'error', 'conf'].forEach((v) => {
+            const watch = this['watch' + v];
+            if (watch) {
+                watch.close();
+            }
+        });
+        process.exec(this.cmd('-s stop'));
     }
 
     render(){

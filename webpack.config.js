@@ -51,7 +51,7 @@ module.exports = {
   entry:'./src/index',
   target: 'electron-renderer',
   devServer:{
-    port:8081,
+    port:9000,
     contentBase:'./dist'
   },
   plugins:plugins,

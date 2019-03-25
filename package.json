@@ -1,6 +1,6 @@
 {
   "name": "NginxGui",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "NginxGui",
   "main": "main.js",
   "author": "yinjiazeng",
@@ -9,7 +9,7 @@
     "start": "electron .",
     "dev": "cross-env NODE_ENV=dev webpack-dev-server --progress",
     "build": "cross-env NODE_ENV=production webpack --progress",
-    "pack": "electron-packager ./ NginxGui --win --out ../ --ignore node_modules --ignore src --ignore webpack.config.js --ignore favicon.ico --ignore README.md --ignore .gitignore --icon favicon.ico"
+    "pack": "electron-packager ./ NginxGui --win --out ../ --ignore node_modules --ignore src --ignore webpack.config.js --ignore favicon.ico --ignore README.md --ignore .gitignore --ignore package-lock.json --icon favicon.ico"
   },
   "build": {
     "win": "favicon.ico"

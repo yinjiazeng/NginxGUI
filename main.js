@@ -23,7 +23,7 @@ function createWindow () {
   // and load the index.html of the app.
   mainWindow.loadFile('./dist/index.html')
 
-  // mainWindow.loadURL('http://127.0.0.1:8081')
+  // mainWindow.loadURL('http://127.0.0.1:9000')
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
