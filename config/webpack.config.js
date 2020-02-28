@@ -120,6 +120,7 @@ module.exports = function(webpackEnv) {
   };
 
   return {
+    target: 'electron-renderer',
     mode: isEnvProduction ? 'production' : isEnvDevelopment && 'development',
     // Stop compilation early in production
     bail: isEnvProduction,
