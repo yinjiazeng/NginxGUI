@@ -2,6 +2,10 @@
   "extends": ["airbnb", "prettier/react", "plugin:prettier/recommended"],
   "rules": {
     "import/extensions": "off",
+    "react/prop-types": "off",
+    "react/require-default-props": "off",
+    "react/jsx-props-no-spreading": "off",
+    "import/prefer-default-export": "off",
     "react/jsx-filename-extension": ["error", {
       "extensions": [
         ".js",
@@ -12,6 +16,7 @@
     }]
   },
   "globals": {
+    "window": true,
     "document": true
   },
   "settings": {

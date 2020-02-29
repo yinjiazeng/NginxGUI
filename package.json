@@ -15,7 +15,7 @@
     "@types/react-dom": "^16.9.0",
     "@typescript-eslint/eslint-plugin": "^2.10.0",
     "@typescript-eslint/parser": "^2.10.0",
-    "antd": "^4.0.0",
+    "antd": "4.0.0",
     "babel-eslint": "10.0.3",
     "babel-jest": "^24.9.0",
     "babel-loader": "8.0.6",
@@ -26,6 +26,7 @@
     "css-loader": "3.4.2",
     "dotenv": "8.2.0",
     "dotenv-expand": "5.1.0",
+    "electron": "^8.0.2",
     "eslint": "^6.6.0",
     "eslint-config-react-app": "^5.2.0",
     "eslint-loader": "3.0.3",
@@ -51,6 +52,7 @@
     "postcss-normalize": "8.0.1",
     "postcss-preset-env": "6.7.0",
     "postcss-safe-parser": "4.0.1",
+    "prop-types": "^15.7.2",
     "react": "^16.13.0",
     "react-app-polyfill": "^1.0.6",
     "react-dev-utils": "^10.2.0",
@@ -148,15 +150,24 @@
   "babel": {
     "presets": [
       "react-app"
+    ],
+    "plugins": [
+      [
+        "import",
+        {
+          "libraryName": "antd",
+          "style": "css"
+        }
+      ]
     ]
   },
   "devDependencies": {
     "babel-plugin-import": "^1.13.0",
-    "electron": "^8.0.2",
     "electron-builder": "^22.3.2",
     "eslint-config-airbnb": "^18.0.1",
     "eslint-config-prettier": "^6.10.0",
     "eslint-plugin-prettier": "^3.1.2",
+    "node-sass": "^4.13.1",
     "prettier": "^1.19.1",
     "stylelint": "^13.2.0",
     "stylelint-config-prettier": "^8.0.1",
