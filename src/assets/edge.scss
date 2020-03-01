@@ -1,0 +1,20 @@
+$value: 4, 8, 12, 16, 20;
+
+@mixin edge($type, $dir) {
+  $shortStart: str-slice($type, 0, 1);
+  $shortEnd: str-slice($dir, 0, 1);
+  @each $i in $value {
+    .e-#{$shortStart}#{$shortEnd}#{$i} {
+      #{$type}-#{$dir}: #{$i}px;
+    }
+  }
+}
+
+@include edge(margin, top);
+@include edge(margin, right);
+@include edge(margin, bottom);
+@include edge(margin, left);
+@include edge(padding, top);
+@include edge(padding, right);
+@include edge(padding, bottom);
+@include edge(padding, left);

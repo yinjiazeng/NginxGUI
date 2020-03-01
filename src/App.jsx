@@ -1,11 +1,20 @@
 import React from 'react';
-import { Nuomi } from 'nuomi';
-import layout from './pages/layout';
+import { Router, Route } from 'nuomi';
+import { ConfigProvider } from 'antd';
+import zhCN from 'antd/es/locale/zh_CN';
+import index from './pages/index';
 import nginx from './pages/nginx';
 import './assets/style.scss';
 
 const App = () => {
-  return <Nuomi {...layout}>{() => <Nuomi {...nginx} />}</Nuomi>;
+  return (
+    <ConfigProvider locale={zhCN}>
+      <Router>
+        <Route path="/" {...index} />
+        <Route path="/nginx" {...nginx} />
+      </Router>
+    </ConfigProvider>
+  );
 };
 
 export default App;

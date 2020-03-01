@@ -1,6 +1,7 @@
 import React from 'react';
 import { useConnect } from 'nuomi';
-import { Form as AntdForm, Button } from 'antd';
+import { Form as AntdForm, Button, Modal } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import Item from './Item';
 import { isWin } from '../../../../utils';
 import style from './style.module.scss';
@@ -19,6 +20,15 @@ const formItemLayout = {
   className: style.form,
 };
 
+const buttonItemLayout = {
+  labelCol: {
+    sm: { span: 0 },
+  },
+  wrapperCol: {
+    sm: { span: 24 },
+  },
+};
+
 const Form = () => {
   const [, dispatch] = useConnect();
   const [form] = AntdForm.useForm();
@@ -33,7 +43,12 @@ const Form = () => {
   };
 
   const onReset = () => {
-    form.resetFields();
+    Modal.confirm({
+      content: '确定要清空吗？',
+      onOk: () => {
+        form.resetFields();
+      },
+    });
   };
 
   const setValues = () => {
@@ -51,6 +66,10 @@ const Form = () => {
     setValues(value);
   };
 
+  const onAdd = () => {
+    //
+  };
+
   return (
     <AntdForm form={form} onFinish={onFinish} {...formItemLayout}>
       <Item
@@ -64,12 +83,17 @@ const Form = () => {
       <Item name="pid" label="nginx.pid" onSelect={onSelect} />
       <Item name="access" label="access.log" onSelect={onSelect} />
       <Item name="error" label="error.log" onSelect={onSelect} />
-      <FormItem label=" " colon={false}>
-        <Button type="primary" htmlType="submit">
-          保 存
+      <FormItem label=" " colon={false} wrapperCol={{ sm: { span: 16 } }} className="e-mr8 e-mb8">
+        <Button type="dashed" onClick={onAdd} style={{ width: '100%' }}>
+          <PlusOutlined /> 新增日志项
         </Button>
-        <Button onClick={onReset} style={{ marginLeft: 16 }}>
-          重 置
+      </FormItem>
+      <FormItem className={style.buttonItem} {...buttonItemLayout}>
+        <Button type="primary" htmlType="submit">
+          进入应用
+        </Button>
+        <Button onClick={onReset} className="e-ml16">
+          清 空
         </Button>
       </FormItem>
     </AntdForm>
