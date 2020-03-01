@@ -1,6 +1,7 @@
 {
   "extends": ["airbnb", "prettier/react", "plugin:prettier/recommended"],
   "rules": {
+    "prefer-promise-reject-errors": "off",
     "import/extensions": "off",
     "react/prop-types": "off",
     "react/require-default-props": "off",
@@ -17,7 +18,8 @@
   },
   "globals": {
     "window": true,
-    "document": true
+    "document": true,
+    "localStorage": true
   },
   "settings": {
     "import/resolver": {

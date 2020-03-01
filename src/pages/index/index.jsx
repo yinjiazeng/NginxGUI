@@ -1,29 +1,29 @@
 import React from 'react';
+import { Redirect, router } from 'nuomi';
 import Layout from './components/Layout';
+import { storage } from '../../utils';
+import getDefaultPath from '../../utils/getDefaultPath';
 
 export default {
-  id: 'global',
-  state: {
-    data: null,
-  },
   effects: {
-    addNginxFromStorage() {
-      const storageData = window.localStorage.getItem('nginx');
-      if (storageData) {
-        this.updateState({ data: JSON.parse(storageData) });
-      }
+    saveNginx({ data }) {
+      this.updateState(data);
+      storage('nginx', JSON.stringify(data));
+      router.replace('/nginx');
     },
-    removeNginx() {
-      this.updateState({ data: null });
-      window.localStorage.setItem('nginx', '');
+    init() {
+      const nginx = this.initNginxFromStorage();
+      if (!nginx) {
+        this.updateState(getDefaultPath());
+      }
     },
   },
   render() {
-    return <Layout nginx={this.children} />;
+    return storage('nginx') ? <Redirect to="/nginx" /> : <Layout />;
   },
   onInit() {
     this.store.dispatch({
-      type: 'addNginxFromStorage',
+      type: 'init',
     });
   },
 };
