@@ -1,12 +1,15 @@
 {
   "extends": ["airbnb", "prettier/react", "plugin:prettier/recommended"],
   "rules": {
+    "consistent-return": "off",
+    "no-unused-expressions": "off",
     "prefer-promise-reject-errors": "off",
     "import/extensions": "off",
     "react/prop-types": "off",
     "react/require-default-props": "off",
     "react/jsx-props-no-spreading": "off",
     "import/prefer-default-export": "off",
+    "react/no-array-index-key": "off",
     "react/jsx-filename-extension": ["error", {
       "extensions": [
         ".js",

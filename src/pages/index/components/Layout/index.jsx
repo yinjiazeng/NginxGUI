@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useConnect, useNuomi } from 'nuomi';
 import { Form, Button, Modal, Row, Col, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
@@ -42,13 +42,15 @@ const defaultLogs = [
 ];
 
 const Layout = () => {
-  const [data, dispatch] = useConnect();
+  const [{ loadings, ...data }, dispatch] = useConnect();
   const { nuomiProps } = useNuomi();
   const [form] = Form.useForm();
+  const formRef = useRef();
+  let voidFields = null;
 
   const onFinish = (values) => {
     dispatch({
-      type: 'saveNginx',
+      type: '$saveNginx',
       payload: values,
     });
   };
@@ -82,17 +84,30 @@ const Layout = () => {
   };
 
   const setValues = (path) => {
-    const fields = form.getFieldsValue();
-    const setFields = {};
-    const defaultPath = getDefaultPath(path);
-    Object.keys(fields).forEach((value) => {
-      if (!['nginx', 'logs'].includes(value) && !fields[value]) {
-        setFields[value] = defaultPath[value];
-      }
-    });
-    if (Object.keys(setFields).length) {
+    if (voidFields) {
+      const setFields = {};
+      const defaultPath = getDefaultPath(path);
+      voidFields.forEach((field) => {
+        setFields[field] = defaultPath[field];
+      });
       form.setFieldsValue(setFields);
     }
+  };
+
+  const setVoidFields = () => {
+    const fields = form.getFieldsValue();
+    Object.keys(fields).forEach((value) => {
+      if (!['nginx', 'logs'].includes(value) && !fields[value]) {
+        if (!voidFields) {
+          voidFields = [];
+        }
+        voidFields.push(value);
+      }
+    });
+  };
+
+  const clearVoidFields = () => {
+    voidFields = null;
   };
 
   const onSelect = (name, path) => {
@@ -100,77 +115,90 @@ const Layout = () => {
       [name]: path,
     });
     if (name === 'nginx') {
+      setVoidFields();
       setValues(path);
+      clearVoidFields();
     }
   };
 
-  const onChange = ({ target: { value } }) => {
+  const onNginxChange = ({ target: { value } }) => {
     setValues(value);
+  };
+
+  const onAdd = (add) => {
+    add();
+    setTimeout(() => {
+      formRef.current.scrollTop = 19920604;
+    }, 0);
   };
 
   return (
     <Form form={form} onFinish={onFinish} {...formItemLayout} initialValues={data}>
-      <Item
-        extra={`选择${nginxName}后，其他项路径会被自动填充，如果错误请自行修改`}
-        name="nginx"
-        label="Nginx"
-        ext={isWin ? '.exe' : ''}
-        onSelect={onSelect}
-        onChange={onChange}
-      />
-      <Item name="conf" label="Conf" ext=".conf" onSelect={onSelect} />
-      <Item name="pid" label="Pid" ext=".pid" onSelect={onSelect} />
-      {defaultLogs.map(({ name, label }) => (
+      <div ref={formRef}>
         <Item
-          key={name}
-          name={name}
-          label={label}
-          ext=".log"
+          extra={`选择${nginxName}后，其他项路径会被自动填充，如果错误请自行修改`}
+          name="nginx"
+          label="Nginx"
+          ext={isWin ? '.exe' : ''}
           onSelect={onSelect}
-          required={false}
+          onChange={onNginxChange}
+          onFocus={setVoidFields}
+          onBlur={clearVoidFields}
         />
-      ))}
-      <FormList name="logs">
-        {(fields, { add, remove }) => {
-          return (
-            <>
-              {fields.map((field, index) => (
-                <Item
-                  {...field}
-                  label={index === 0 ? 'Other Log' : ''}
-                  wrapperCol={index === 0 ? null : { sm: { offset: 4, span: 20 } }}
-                  ext=".log"
-                  onRemove={() => remove(field.name)}
-                  onSelect={onSelect}
-                  required={false}
-                />
-              ))}
-              <FormItem label=" " colon={false} required={false} className="e-mb8">
-                <Row gutter={8}>
-                  <Col span={19}>
-                    <Button type="dashed" onClick={() => add()} style={{ width: '100%' }}>
-                      <PlusOutlined /> 新增日志项
-                    </Button>
-                  </Col>
-                </Row>
-              </FormItem>
-            </>
-          );
-        }}
-      </FormList>
-      <FormItem className={style.buttonItem} {...buttonItemLayout}>
-        <Button type="primary" htmlType="submit">
-          进入应用
-        </Button>
-        {nuomiProps.data.edit && (
-          <Button type="primary" onClick={onSave} className="e-ml16">
-            保 存
+        <Item name="conf" label="Conf" ext=".conf" onSelect={onSelect} />
+        <Item name="pid" label="Pid" ext=".pid" onSelect={onSelect} />
+        {defaultLogs.map(({ name, label }) => (
+          <Item
+            key={name}
+            name={name}
+            label={label}
+            ext=".log"
+            onSelect={onSelect}
+            required={false}
+          />
+        ))}
+        <FormList name="logs">
+          {(fields, { add, remove }) => {
+            return (
+              <>
+                {fields.map((field, index) => (
+                  <Item
+                    {...field}
+                    label={index === 0 ? 'Other Log' : ''}
+                    wrapperCol={index === 0 ? null : { sm: { offset: 4, span: 20 } }}
+                    ext=".log"
+                    onRemove={() => remove(field.name)}
+                    onSelect={onSelect}
+                    required={false}
+                  />
+                ))}
+                <FormItem label=" " colon={false} required={false} className="e-mb8">
+                  <Row gutter={8}>
+                    <Col span={19}>
+                      <Button type="dashed" onClick={() => onAdd(add)} style={{ width: '100%' }}>
+                        <PlusOutlined /> 新增日志项
+                      </Button>
+                    </Col>
+                  </Row>
+                </FormItem>
+              </>
+            );
+          }}
+        </FormList>
+        <FormItem className={style.buttonItem} {...buttonItemLayout}>
+          <Button type="primary" htmlType="submit" loading={loadings.$saveNginx}>
+            进入应用
           </Button>
-        )}
-        <Button onClick={onReset} className="e-ml16">
-          清 空
-        </Button>
-      </FormItem>
+          {nuomiProps.data.edit && (
+            <Button type="primary" onClick={onSave} className="e-ml16">
+              保 存
+            </Button>
+          )}
+          <Button onClick={onReset} className="e-ml16">
+            清 空
+          </Button>
+        </FormItem>
+      </div>
     </Form>
   );
 };

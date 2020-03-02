@@ -10,17 +10,15 @@ export const isLinux = osType === 'Linux';
 
 export const isWin = osType === 'Windows_NT';
 
-export const normalize = (str) => str.replace(/\\/g, '/');
+export const normalize = (str) => (str ? str.trim().replace(/\\/g, '/') : '');
 
 export const storage = (...args) => {
   if (!args.length) {
     return;
   }
   if (args.length === 1) {
-    // eslint-disable-next-line consistent-return
     return localStorage.getItem(args[0]);
   }
-  // eslint-disable-next-line consistent-return
   return localStorage.setItem(args[0], args[1]);
 };
 
@@ -66,4 +64,10 @@ export const checkProcessById = (id) => {
     code = 'tasklist|findstr';
   }
   return cmd(`${code} ${id}`);
+};
+
+export const delay = (time = 300) => {
+  return new Promise((res) => {
+    setTimeout(() => res(), time);
+  });
 };

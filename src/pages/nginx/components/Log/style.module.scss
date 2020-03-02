@@ -1,0 +1,41 @@
+.log:global(.ant-card) {
+  height: 216px;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  &:first-child {
+    margin-top: 0;
+  }
+  :global {
+    .ant-card-head {
+      padding: 0 8px;
+      min-height: 32px;
+      height: 32px;
+      line-height: 31px;
+      background-color: #fafafa;
+      .ant-card-head-title,
+      .ant-card-extra {
+        padding: 0;
+      }
+      .ant-card-head-title {
+        font-weight: normal;
+        font-size: 14px;
+        color: rgba(0, 0, 0, 0.65);
+      }
+    }
+    .ant-card-body {
+      flex: 1;
+      padding: 0;
+      overflow: hidden;
+      padding-right: 2px;
+      & > div {
+        height: 100%;
+        overflow: auto;
+        padding: 6px 8px 0;
+        p {
+          margin-bottom: 6px;
+        }
+      }
+    }
+  }
+}

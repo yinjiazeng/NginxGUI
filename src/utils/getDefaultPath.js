@@ -19,8 +19,8 @@ const getDefaultPath = (nginxPath = NGINX) => {
     } else if (isMac) {
       defaultPath.conf = path.join(nginxPath, '../../etc/nginx', CONF);
       defaultPath.pid = path.join(nginxPath, '../../var/run', PID);
-      defaultPath.access = path.join(nginxPath, '../../var/log', ACCESS);
-      defaultPath.error = path.join(nginxPath, '../../var/log', ERROR);
+      defaultPath.access = path.join(nginxPath, '../../var/log/nginx', ACCESS);
+      defaultPath.error = path.join(nginxPath, '../../var/log/nginx', ERROR);
     } else if (isLinux) {
       //
     }

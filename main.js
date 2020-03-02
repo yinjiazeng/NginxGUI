@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow, ipcMain, dialog } = require('electron')
+const {app, BrowserWindow, ipcMain, dialog, globalShortcut } = require('electron')
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -17,9 +17,9 @@ function createWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     minWidth:800,
-    minHeight: 540,
+    minHeight: 550,
     width: 800,
-    height: 540,
+    height: 550,
     webPreferences: {
       nodeIntegration: true
     }
@@ -64,16 +64,16 @@ app.on('activate', function () {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 let singleDialog = null;
-ipcMain.on('open-directory-dialog', function (event, options) {
-  if (!singleDialog) {
-    singleDialog = dialog.showOpenDialog(options).then(({ filePaths }) => {
-      if (filePaths.length) {
-        event.sender.send('selectedItem', filePaths[0]);
-      }
-    }).finally((e) => {
-      singleDialog = null;
-    })
-  } else {
-    event.sender.send('selectedItem', null);
-  }
-})
+  ipcMain.on('open-directory-dialog', function (event, options) {
+    if (!singleDialog) {
+      singleDialog = dialog.showOpenDialog(options).then(({ filePaths }) => {
+        if (filePaths.length) {
+          event.sender.send('selectedItem', filePaths[0]);
+        }
+      }).finally((e) => {
+        singleDialog = null;
+      })
+    } else {
+      event.sender.send('selectedItem', null);
+    }
+  })

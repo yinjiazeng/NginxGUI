@@ -1,5 +1,7 @@
-import React from 'react';
-import { Card, Spin, Button } from 'antd';
+import React, { useMemo } from 'react';
+import { Card, Spin, Button, message } from 'antd';
+import { shell } from 'electron';
+import path from 'path';
 import {
   StopOutlined,
   FolderOpenOutlined,
@@ -10,10 +12,17 @@ import {
 } from '@ant-design/icons';
 import { useConnect, router } from 'nuomi';
 import Helper from '../Helper';
-import './style.scss';
+import Log from '../Log';
+import { useWatch } from '../../../../hooks';
+import { checkFileExist } from '../../../../utils';
+import style from './style.module.scss';
 
 const Layout = () => {
-  const [{ loadings, started }, dispatch] = useConnect();
+  const [{ loadings, started, nginx, conf, error, access, logs }, dispatch] = useConnect();
+
+  const logFiles = useMemo(() => {
+    return [access, error].concat(logs || []);
+  }, [access, error, logs]);
 
   const stop = () => {
     dispatch({ type: '$stop' });
@@ -31,17 +40,37 @@ const Layout = () => {
     dispatch({ type: '$delete' });
   };
 
-  const editConf = () => {};
+  const editConf = async () => {
+    try {
+      await checkFileExist(conf);
+      shell.openItem(conf);
+    } catch (e) {
+      message.error(e);
+    }
+  };
 
   const edit = () => {
     router.location('/', { edit: true });
   };
 
-  const open = () => {};
+  const open = async () => {
+    try {
+      await checkFileExist(path.dirname(nginx));
+      shell.showItemInFolder(nginx);
+    } catch (e) {
+      message.error('目录不存在');
+    }
+  };
+
+  useWatch(() => {
+    started && reload();
+  }, [conf, started]);
 
   return (
     <Spin spinning={loadings.$checkStart}>
       <Card
+        className={style.card}
+        bordered={false}
         title={
           <span>
             {started ? (
@@ -90,7 +119,11 @@ const Layout = () => {
             <Helper className="e-ml8" />
           </span>
         }
-      />
+      >
+        {logFiles.map((log, k) => (
+          <Log file={log} key={`${log || ''}_${k}`} />
+        ))}
+      </Card>
     </Spin>
   );
 };

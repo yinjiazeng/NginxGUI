@@ -4,18 +4,19 @@ import { storage, readFile, checkProcessById, cmd, checkFileExist } from '../../
 
 export default {
   // 执行命令
-  // eslint-disable-next-line consistent-return
   async cmd(code, msg) {
-    const { nginx } = this.getState();
+    const { nginx, conf } = this.getState();
     try {
       await checkFileExist(nginx);
     } catch (e) {
       message.error('nginx文件不存在');
+      return Promise.reject();
     }
     try {
-      await cmd(`${nginx} ${code}`);
+      await cmd(`"${nginx}" -c "${conf}" ${code}`);
     } catch (e) {
       message.error(msg || '操作失败');
+      return Promise.reject();
     }
   },
   // 启动nginx
@@ -25,8 +26,9 @@ export default {
       await checkFileExist(conf);
     } catch (e) {
       message.error('conf文件不存在');
+      return Promise.reject();
     }
-    await this.cmd(`-c ${conf}`, '启动失败');
+    await this.cmd('', '启动失败');
     this.updateState({ started: true });
   },
   // 停止nginx
@@ -49,10 +51,7 @@ export default {
   },
   // 根据pid检测nginx是否已经启动
   async $checkStart() {
-    if (!this.initNginxFromStorage()) {
-      router.replace('/');
-      return;
-    }
+    this.initNginxFromStorage();
     const { pid } = this.getState();
     const id = await readFile(pid);
     await checkProcessById(id);

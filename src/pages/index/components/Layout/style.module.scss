@@ -1,14 +1,18 @@
 .form {
   height: 100%;
-  padding: 48px 20px 72px;
-  overflow-y: auto;
-  overflow-x: hidden;
+  margin-right: 2px;
+  & > div {
+    height: 100%;
+    padding: 48px 20px 72px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
 }
 
 .buttonItem {
   position: fixed;
   left: 0;
-  right: 0;
+  right: 12px;
   bottom: 0;
   margin: 0;
   padding: 20px 0;

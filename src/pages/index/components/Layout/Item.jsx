@@ -1,9 +1,8 @@
 import React from 'react';
 import { Form, Input, Button, Row, Col } from 'antd';
 import { MinusCircleOutlined } from '@ant-design/icons';
+import { ipcRenderer } from 'electron';
 import { checkFileExist } from '../../../../utils';
-
-const { ipcRenderer } = require('electron');
 
 const EXT_REGEXP = /\.\w+$/;
 
@@ -14,6 +13,8 @@ const Item = ({
   input,
   onSelect,
   onChange,
+  onFocus,
+  onBlur,
   onRemove,
   required = true,
   ...rest
@@ -77,7 +78,13 @@ const Item = ({
       <Row gutter={8}>
         <Col span={19}>
           <Form.Item name={name} noStyle rules={rules} validateTrigger="onBlur">
-            <Input placeholder={`请输入或选择${label}路径`} autoComplete="off" />
+            <Input
+              placeholder={`请输入或选择${label}路径`}
+              onChange={onChange}
+              onFocus={onFocus}
+              onBlur={onBlur}
+              autoComplete="off"
+            />
           </Form.Item>
         </Col>
         <Col span={5}>
