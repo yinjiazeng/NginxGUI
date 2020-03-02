@@ -21,7 +21,7 @@ export const storage = (...args) => {
     return localStorage.getItem(args[0]);
   }
   // eslint-disable-next-line consistent-return
-  return localStorage.getItem(args[0], args[1]);
+  return localStorage.setItem(args[0], args[1]);
 };
 
 export const checkFileExist = (url) => {
@@ -42,7 +42,7 @@ export const readFile = (url) => {
       if (!err) {
         res(content.toString());
       } else {
-        rej(err);
+        rej();
       }
     });
   });
@@ -54,16 +54,16 @@ export const cmd = (code) => {
       if (!err) {
         res();
       } else {
-        rej(err);
+        rej();
       }
     });
   });
 };
 
 export const checkProcessById = (id) => {
-  let code = '';
+  let code = 'lsof -nP -i | grep';
   if (isWin) {
-    code = '';
+    code = 'tasklist|findstr';
   }
   return cmd(`${code} ${id}`);
 };

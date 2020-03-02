@@ -9180,10 +9180,10 @@ number-is-nan@^1.0.0:
   resolved "https://registry.yarnpkg.com/number-is-nan/-/number-is-nan-1.0.1.tgz#097b602b53422a522c1afb8790318336941a011d"
   integrity sha1-CXtgK1NCKlIsGvuHkDGDNpQaAR0=
 
-nuomi@^0.8.5:
-  version "0.8.5"
-  resolved "https://registry.yarnpkg.com/nuomi/-/nuomi-0.8.5.tgz#d8f48dcb31dcf7ca45866cf6b8b2369b1067c862"
-  integrity sha512-ofe7pVUvR86iWQqkkLWT7gdSgG5BxZlrFwWP5Qp6GBFmGRSDebGqJVvlLrRp3VvsFFGnwPgl61gdq4OTBvwE1g==
+nuomi@^0.8.6:
+  version "0.8.6"
+  resolved "https://registry.yarnpkg.com/nuomi/-/nuomi-0.8.6.tgz#e43627537f89f76b97b21e7dbb9ba81df2d53a90"
+  integrity sha512-Kf6Gz1SPmqN99/AvgEilVeuRe6RQ8NU91g6aJYHsQ4pEhmLORo/hXnRhMHrFAM2n3O1UbUC3VLRikJRXFZCDVA==
   dependencies:
     invariant "^2.2.4"
     prop-types "^15.7.2"

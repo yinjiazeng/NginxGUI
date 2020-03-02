@@ -1,25 +1,20 @@
 import React from 'react';
-import { Redirect, router } from 'nuomi';
+import { Redirect } from 'nuomi';
 import Layout from './components/Layout';
 import { storage } from '../../utils';
-import getDefaultPath from '../../utils/getDefaultPath';
+import effects from './effects';
 
 export default {
-  effects: {
-    saveNginx({ data }) {
-      this.updateState(data);
-      storage('nginx', JSON.stringify(data));
-      router.replace('/nginx');
-    },
-    init() {
-      const nginx = this.initNginxFromStorage();
-      if (!nginx) {
-        this.updateState(getDefaultPath());
-      }
-    },
+  data: {
+    // 是否是编辑状态
+    edit: false,
   },
+  effects,
   render() {
-    return storage('nginx') ? <Redirect to="/nginx" /> : <Layout />;
+    if (this.data.edit || !storage('nginx')) {
+      return <Layout />;
+    }
+    return <Redirect to="/nginx" />;
   },
   onInit() {
     this.store.dispatch({

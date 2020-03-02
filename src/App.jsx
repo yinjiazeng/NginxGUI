@@ -4,6 +4,7 @@ import { ConfigProvider } from 'antd';
 import zhCN from 'antd/es/locale/zh_CN';
 import index from './pages/index';
 import nginx from './pages/nginx';
+import help from './pages/help';
 import './assets/style.scss';
 
 const App = () => {
@@ -11,7 +12,8 @@ const App = () => {
     <ConfigProvider locale={zhCN}>
       <Router>
         <Route path="/" {...index} />
-        <Route path="/nginx" {...nginx} />
+        <Route path="/nginx" cache {...nginx} />
+        <Route path="/help" {...help} />
       </Router>
     </ConfigProvider>
   );

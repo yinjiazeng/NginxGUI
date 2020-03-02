@@ -43,6 +43,7 @@ const Item = ({
     if (value) {
       const val = value.trim();
       const match = ext.match(EXT_REGEXP);
+      const matchValue = value.match(EXT_REGEXP);
       if (match) {
         if (val.endsWith(match[0])) {
           if (['nginx', 'conf'].includes()) {
@@ -50,10 +51,10 @@ const Item = ({
           }
           return Promise.resolve();
         }
-        return Promise.reject(`文件格式必须是 ${match[0]} 结尾`);
+        return Promise.reject(`文件格式错误，必须以${match[0]}结尾`);
       }
-      if (value.match(EXT_REGEXP)) {
-        return Promise.reject(`文件不应该有拓展名`);
+      if (matchValue) {
+        return Promise.reject(`文件格式错误，不允许以${matchValue[0]}结尾`);
       }
       return checkFileExist(val);
     }

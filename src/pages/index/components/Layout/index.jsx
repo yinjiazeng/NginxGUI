@@ -1,6 +1,6 @@
 import React from 'react';
-import { useConnect } from 'nuomi';
-import { Form, Button, Modal, Row, Col } from 'antd';
+import { useConnect, useNuomi } from 'nuomi';
+import { Form, Button, Modal, Row, Col, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import Item from './Item';
 import { isWin } from '../../../../utils';
@@ -43,27 +43,38 @@ const defaultLogs = [
 
 const Layout = () => {
   const [data, dispatch] = useConnect();
+  const { nuomiProps } = useNuomi();
   const [form] = Form.useForm();
 
   const onFinish = (values) => {
     dispatch({
       type: 'saveNginx',
-      payload: {
-        data: values,
-      },
+      payload: values,
     });
+  };
+
+  const onSave = async () => {
+    try {
+      await form.validateFields();
+      dispatch({
+        type: 'save',
+        payload: form.getFieldsValue(),
+      });
+      message.success('保存成功');
+      // eslint-disable-next-line no-empty
+    } catch (e) {}
   };
 
   const onReset = () => {
     Modal.confirm({
       content: '确定要清空吗？',
       onOk: () => {
+        const clearFields = {};
+        ['nginx', 'conf', 'pid', 'access', 'error'].forEach((value) => {
+          clearFields[value] = '';
+        });
         form.setFieldsValue({
-          nginx: '',
-          conf: '',
-          pid: '',
-          access: '',
-          error: '',
+          ...clearFields,
           logs: [],
         });
       },
@@ -151,6 +162,11 @@ const Layout = () => {
         <Button type="primary" htmlType="submit">
           进入应用
         </Button>
+        {nuomiProps.data.edit && (
+          <Button type="primary" onClick={onSave} className="e-ml16">
+            保 存
+          </Button>
+        )}
         <Button onClick={onReset} className="e-ml16">
           清 空
         </Button>

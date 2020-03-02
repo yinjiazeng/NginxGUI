@@ -1,4 +1,5 @@
-import { nuomi } from 'nuomi';
+import { message } from 'antd';
+import { nuomi, router } from 'nuomi';
 import { storage } from './utils';
 
 nuomi.config({
@@ -17,4 +18,13 @@ nuomi.config({
       });
     },
   },
+});
+
+message.config({
+  duration: 2,
+  maxCount: 1,
+});
+
+router.listener(() => {
+  message.destroy();
 });
