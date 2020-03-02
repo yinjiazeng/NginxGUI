@@ -63,7 +63,7 @@ const Log = ({ file }) => {
       extra={
         <>
           <Button size="small" onClick={onOpen}>
-            打开日志
+            全部日志
           </Button>
           <Button size="small" className="e-ml8" onClick={onClear} loading={clearLoading}>
             清除日志

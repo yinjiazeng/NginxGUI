@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow, ipcMain, dialog, globalShortcut } = require('electron')
+const {app, BrowserWindow, ipcMain, dialog, shell } = require('electron')
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -77,3 +77,7 @@ let singleDialog = null;
       event.sender.send('selectedItem', null);
     }
   })
+
+ipcMain.on('open-url', (event, url) => {
+  shell.openExternal(url);
+});

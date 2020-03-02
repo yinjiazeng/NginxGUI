@@ -1,13 +1,30 @@
 import React from 'react';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Menu, Dropdown } from 'antd';
-import { Link } from 'nuomi';
+import { shell } from 'electron';
+
+const menus = [
+  {
+    url: 'https://github.com/yinjiazeng/NginxGUI/issues/1',
+    title: '常见问题',
+  },
+  {
+    url: 'https://github.com/yinjiazeng/NginxGUI/issues',
+    title: '建议反馈',
+  },
+  {
+    url: 'https://github.com/yinjiazeng/NginxGUI/blob/master/README.md',
+    title: '关于NginxGUI',
+  },
+];
 
 const menu = (
   <Menu>
-    <Menu.Item>
-      <Link to="/help">常见问题</Link>
-    </Menu.Item>
+    {menus.map(({ url, title }) => (
+      <Menu.Item key={title}>
+        <a onClick={() => shell.openExternal(url)}>{title}</a>
+      </Menu.Item>
+    ))}
   </Menu>
 );
 
