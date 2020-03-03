@@ -13,11 +13,15 @@ const resolveApp = (relativePath) => path.resolve(appDirectory, relativePath);
 // single-page apps that may serve index.html for nested URLs like /todos/42.
 // We can't use a relative path in HTML because we don't want to load something
 // like /todos/42/static/js/bundle.7289d.js. We have to know the root.
-const publicUrlOrPath = getPublicUrlOrPath(
+let publicUrlOrPath = getPublicUrlOrPath(
   process.env.NODE_ENV === 'development',
   require(resolveApp('package.json')).homepage,
   process.env.PUBLIC_URL,
 );
+
+if (process.env.NODE_ENV !== 'development') {
+  publicUrlOrPath = './'
+}
 
 const moduleFileExtensions = [
   'web.mjs',
