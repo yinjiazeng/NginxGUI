@@ -5,6 +5,7 @@
   "main": "main.js",
   "description": "NginxGUI",
   "author": "yinjiazeng",
+  "license": "MIT",
   "build": {
     "productName": "NginxGUI",
     "compression": "store",

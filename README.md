@@ -3,10 +3,10 @@
 ，比如可以实时查看日志，监听配置文件自动重启等，主要面向前后端web开发人员，可以有效降低对 `nginx` 的使用成本，提升生产效率。
 
 ## 预览
-吧啦吧啦...
+![](https://github.com/yinjiazeng/NginxGUI/blob/master/assets/preview.gif)
 
 ## 下载
-吧啦吧啦...
+[下载地址](https://github.com/yinjiazeng/NginxGUI/releases)
 
 ## 开发
 ```sh
