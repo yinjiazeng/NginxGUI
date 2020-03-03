@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow, ipcMain, dialog, shell } = require('electron')
+const {app, BrowserWindow, ipcMain, dialog } = require('electron')
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -39,6 +39,7 @@ function createWindow () {
     mainWindow = null
   })
 
+  // 解决首次打开白屏问题
   mainWindow.on('ready-to-show', function () {
     mainWindow.show()
   })
@@ -66,23 +67,18 @@ app.on('activate', function () {
   }
 })
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
+// 打开目录或者文件
 let singleDialog = null;
-  ipcMain.on('open-directory-dialog', function (event, options) {
-    if (!singleDialog) {
-      singleDialog = dialog.showOpenDialog(options).then(({ filePaths }) => {
-        if (filePaths.length) {
-          event.sender.send('selectedItem', filePaths[0]);
-        }
-      }).finally((e) => {
-        singleDialog = null;
-      })
-    } else {
-      event.sender.send('selectedItem', null);
-    }
-  })
-
-ipcMain.on('open-url', (event, url) => {
-  shell.openExternal(url);
-});
+ipcMain.on('open-directory-dialog', function (event, options) {
+  if (!singleDialog) {
+    singleDialog = dialog.showOpenDialog(options).then(({ filePaths }) => {
+      if (filePaths.length) {
+        event.sender.send('selectedItem', filePaths[0]);
+      }
+    }).finally((e) => {
+      singleDialog = null;
+    })
+  } else {
+    event.sender.send('selectedItem', null);
+  }
+})

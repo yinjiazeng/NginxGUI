@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Form, Input, Button, Row, Col } from 'antd';
 import { MinusCircleOutlined } from '@ant-design/icons';
 import { ipcRenderer } from 'electron';
 import { checkFileExist, preventMutilClick } from '../../../../utils';
+import Context from './Context';
 
 const EXT_REGEXP = /\.\w+$/;
 
@@ -19,6 +20,8 @@ const Item = ({
   required = true,
   ...rest
 }) => {
+  const form = useContext(Context);
+
   const selectedItem = (...args) => {
     if (args[1]) {
       onSelect(name, args[1]);
@@ -34,6 +37,7 @@ const Item = ({
   const onClick = preventMutilClick(() => {
     const match = ext.match(EXT_REGEXP);
     ipcRenderer.send('open-directory-dialog', {
+      defaultPath: form.getFieldValue(name),
       properties: ['openFile'],
       filters: [
         {

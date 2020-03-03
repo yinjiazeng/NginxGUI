@@ -1,6 +1,7 @@
 import os from 'os';
 import fs from 'fs';
 import childProcess from 'child_process';
+import { shell } from 'electron';
 import { message } from 'antd';
 
 const osType = os.type();
@@ -95,4 +96,8 @@ export const writeFile = (file, text = '') => {
       }
     });
   });
+};
+
+export const openFolder = (path) => {
+  shell.showItemInFolder(isWin ? path.replace(/\//g, '\\') : path);
 };

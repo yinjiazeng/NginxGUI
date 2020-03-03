@@ -14,7 +14,7 @@ import { useConnect, router } from 'nuomi';
 import Helper from '../Helper';
 import Log from '../Log';
 import { useWatch } from '../../../../hooks';
-import { checkFileExist, preventMutilClick } from '../../../../utils';
+import { checkFileExist, preventMutilClick, openFolder } from '../../../../utils';
 import style from './style.module.scss';
 
 const Layout = () => {
@@ -51,7 +51,7 @@ const Layout = () => {
 
   const open = preventMutilClick(async () => {
     await checkFileExist(path.dirname(nginx), '目录不存在');
-    shell.showItemInFolder(nginx);
+    openFolder(nginx);
   });
 
   useWatch(() => {
