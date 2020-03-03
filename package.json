@@ -1,9 +1,9 @@
 {
-  "name": "nginx-gui",
+  "name": "NginxGUI",
   "version": "1.0.0",
   "private": true,
   "main": "main.js",
-  "description": "nginx-gui",
+  "description": "NginxGUI",
   "author": "yinjiazeng",
   "build": {
     "productName": "NginxGUI",
@@ -12,7 +12,26 @@
       "output": "build"
     },
     "mac": {
-      "icon": "icon.png"
+      "icon": "assets/icon.png"
+    },
+    "win": {
+      "icon": "assets/icon.png",
+      "target": {
+        "target": "nsis",
+        "arch": [
+          "ia32"
+        ]
+      }
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "installerIcon": "assets/icon.ico",
+      "uninstallerIcon": "assets/icon.ico",
+      "installerHeaderIcon": "assets/icon.ico"
     }
   },
   "scripts": {

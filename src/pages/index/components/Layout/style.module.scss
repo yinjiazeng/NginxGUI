@@ -4,8 +4,8 @@
   & > div {
     height: 100%;
     padding: 48px 20px 72px;
+    overflow: hidden;
     overflow-y: auto;
-    overflow-x: hidden;
   }
 }
 

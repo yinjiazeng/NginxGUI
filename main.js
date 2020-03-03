@@ -1,5 +1,6 @@
 // Modules to control application life and create native browser window
 const {app, BrowserWindow, ipcMain, dialog } = require('electron')
+const os = require('os');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -13,14 +14,22 @@ if(!getLock) {
   return
 }
 
+let minHeight = 550;
+let height = minHeight;
+
+if (os.type() === 'Windows_NT') {
+  minHeight = height = 564;
+}
+
 function createWindow () {
-  // Create the browser window.
   mainWindow = new BrowserWindow({
     minWidth:800,
-    minHeight: 550,
+    minHeight,
     width: 800,
-    height: 550,
+    height,
     show: false,
+    icon: 'assets/icon.png',
+    autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: true
     }
