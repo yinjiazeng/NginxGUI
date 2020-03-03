@@ -22,9 +22,7 @@ export default {
     router.replace('/nginx', true);
   },
   init() {
-    const nginx = this.initNginxFromStorage();
-    if (!nginx) {
-      this.updateState(getDefaultPath());
-    }
+    const nginx = storage('nginx');
+    this.updateState(nginx ? JSON.parse(nginx) : getDefaultPath());
   },
 };

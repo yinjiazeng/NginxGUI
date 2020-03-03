@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
-import { useConnect, useNuomi } from 'nuomi';
-import { Form, Button, Modal, Row, Col, message } from 'antd';
+import { useConnect, useNuomi, router } from 'nuomi';
+import { Form, Button, Modal, Row, Col } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import Item from './Item';
 import { isWin } from '../../../../utils';
@@ -55,16 +55,20 @@ const Layout = () => {
     });
   };
 
-  const onSave = async () => {
-    try {
-      await form.validateFields();
-      dispatch({
-        type: 'save',
-        payload: form.getFieldsValue(),
-      });
-      message.success('保存成功');
-      // eslint-disable-next-line no-empty
-    } catch (e) {}
+  // const onSave = async () => {
+  //   try {
+  //     await form.validateFields();
+  //     dispatch({
+  //       type: 'save',
+  //       payload: form.getFieldsValue(),
+  //     });
+  //     message.success('保存成功');
+  //     // eslint-disable-next-line no-empty
+  //   } catch (e) {}
+  // };
+
+  const onBack = () => {
+    router.back();
   };
 
   const onReset = () => {
@@ -189,14 +193,14 @@ const Layout = () => {
           <Button type="primary" htmlType="submit" loading={loadings.$saveNginx}>
             进入应用
           </Button>
-          {nuomiProps.data.edit && (
-            <Button type="primary" onClick={onSave} className="e-ml16">
-              保 存
-            </Button>
-          )}
           <Button onClick={onReset} className="e-ml16">
             清 空
           </Button>
+          {nuomiProps.data.edit && (
+            <Button onClick={onBack} className="e-ml16">
+              返 回
+            </Button>
+          )}
         </FormItem>
       </div>
     </Form>

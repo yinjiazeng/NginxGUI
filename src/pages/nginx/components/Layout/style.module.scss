@@ -1,3 +1,11 @@
+.spin {
+  :global {
+    .ant-spin-dot {
+      position: fixed !important;
+    }
+  }
+}
+
 .card:global(.ant-card) {
   & > :global(.ant-card-head) {
     height: 64px;

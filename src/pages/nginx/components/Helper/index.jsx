@@ -5,11 +5,11 @@ import { shell } from 'electron';
 
 const menus = [
   {
-    url: 'https://github.com/yinjiazeng/NginxGUI/issues/1',
+    url: 'https://github.com/yinjiazeng/NginxGUI/issues',
     title: '常见问题',
   },
   {
-    url: 'https://github.com/yinjiazeng/NginxGUI/issues',
+    url: 'https://github.com/yinjiazeng/NginxGUI/issues/new',
     title: '建议反馈',
   },
   {

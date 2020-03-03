@@ -2,7 +2,7 @@ import React from 'react';
 import { Form, Input, Button, Row, Col } from 'antd';
 import { MinusCircleOutlined } from '@ant-design/icons';
 import { ipcRenderer } from 'electron';
-import { checkFileExist } from '../../../../utils';
+import { checkFileExist, preventMutilClick } from '../../../../utils';
 
 const EXT_REGEXP = /\.\w+$/;
 
@@ -13,7 +13,7 @@ const Item = ({
   input,
   onSelect,
   onChange,
-  onFocus,
+  onFocus: onPropsFocus,
   onBlur,
   onRemove,
   required = true,
@@ -26,7 +26,12 @@ const Item = ({
     ipcRenderer.removeListener('selectedItem', selectedItem);
   };
 
-  const onClick = () => {
+  const onFocus = (e) => {
+    onPropsFocus && onPropsFocus(e);
+    e.target.select();
+  };
+
+  const onClick = preventMutilClick(() => {
     const match = ext.match(EXT_REGEXP);
     ipcRenderer.send('open-directory-dialog', {
       properties: ['openFile'],
@@ -38,7 +43,7 @@ const Item = ({
       ],
     });
     ipcRenderer.on('selectedItem', selectedItem);
-  };
+  });
 
   const validator = (rule, value) => {
     if (value) {

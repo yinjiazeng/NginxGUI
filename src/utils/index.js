@@ -1,6 +1,7 @@
 import os from 'os';
 import fs from 'fs';
 import childProcess from 'child_process';
+import { message } from 'antd';
 
 const osType = os.type();
 
@@ -22,13 +23,30 @@ export const storage = (...args) => {
   return localStorage.setItem(args[0], args[1]);
 };
 
-export const checkFileExist = (url) => {
+export const delay = (time = 300) => {
+  return new Promise((res) => {
+    setTimeout(() => res(), time);
+  });
+};
+
+export const preventMutilClick = (cb) => {
+  let timer = null;
+  return () => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      cb && cb();
+    }, 100);
+  };
+};
+
+export const checkFileExist = (url, msg) => {
   return new Promise((res, rej) => {
     fs.access(url, (err) => {
       if (!err) {
         res();
       } else {
-        rej('文件不存在');
+        rej(msg || '文件不存在');
+        msg && message.error(msg);
       }
     });
   });
@@ -46,13 +64,14 @@ export const readFile = (url) => {
   });
 };
 
-export const cmd = (code) => {
+export const cmd = (code, msg) => {
   return new Promise((res, rej) => {
     childProcess.exec(code, (err) => {
       if (!err) {
         res();
       } else {
-        rej();
+        rej(msg);
+        msg && message.error(msg);
       }
     });
   });
@@ -66,8 +85,14 @@ export const checkProcessById = (id) => {
   return cmd(`${code} ${id}`);
 };
 
-export const delay = (time = 300) => {
-  return new Promise((res) => {
-    setTimeout(() => res(), time);
+export const writeFile = (file, text = '') => {
+  return new Promise((res, rej) => {
+    fs.writeFile(file, text, (err) => {
+      if (!err) {
+        res();
+      } else {
+        rej();
+      }
+    });
   });
 };

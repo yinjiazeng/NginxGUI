@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Button, Card, message } from 'antd';
+import { Button, Card } from 'antd';
 import { shell } from 'electron';
-import fs from 'fs';
 import { useWatch } from '../../../../hooks';
-import { readFile, checkFileExist } from '../../../../utils';
+import { readFile, checkFileExist, writeFile, preventMutilClick } from '../../../../utils';
 import style from './style.module.scss';
 
 const Log = ({ file }) => {
@@ -11,41 +10,25 @@ const Log = ({ file }) => {
   const [clearLoading, setClearLoading] = useState(false);
   const scroller = useRef();
 
-  const onClear = async () => {
-    try {
-      await checkFileExist(file);
-      setClearLoading(true);
-      fs.writeFile(file, '', (err) => {
-        if (err) {
-          message.error('操作失败');
-        }
-        setData([]);
-        setClearLoading(false);
-      });
-    } catch (e) {
-      message.error(e);
-    }
-  };
+  const onClear = preventMutilClick(async () => {
+    await checkFileExist(file, '日志文件不存在');
+    setClearLoading(true);
+    await writeFile(file, '');
+    setData([]);
+    setClearLoading(false);
+  });
 
-  const onOpen = async () => {
-    try {
-      await checkFileExist(file);
-      shell.openItem(file);
-    } catch (e) {
-      message.error(e);
-    }
-  };
+  const onOpen = preventMutilClick(async () => {
+    await checkFileExist(file, '日志文件不存在');
+    shell.openItem(file);
+  });
 
   const loadFile = async () => {
-    try {
-      const content = await readFile(file);
-      const array = content.split(/\n/g).slice(-100);
-      setData(array.filter((text) => text.trim()));
-      if (scroller.current) {
-        scroller.current.scrollTop = 19920604;
-      }
-    } catch (e) {
-      //
+    const content = await readFile(file);
+    const array = content.split(/\n/g).slice(-100);
+    setData(array.filter((text) => text.trim()));
+    if (scroller.current) {
+      scroller.current.scrollTop = 19920604;
     }
   };
 

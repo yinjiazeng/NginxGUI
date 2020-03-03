@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Card, Spin, Button, message } from 'antd';
+import { Card, Spin, Button } from 'antd';
 import { shell } from 'electron';
 import path from 'path';
 import {
@@ -14,7 +14,7 @@ import { useConnect, router } from 'nuomi';
 import Helper from '../Helper';
 import Log from '../Log';
 import { useWatch } from '../../../../hooks';
-import { checkFileExist } from '../../../../utils';
+import { checkFileExist, preventMutilClick } from '../../../../utils';
 import style from './style.module.scss';
 
 const Layout = () => {
@@ -40,34 +40,26 @@ const Layout = () => {
     dispatch({ type: '$delete' });
   };
 
-  const editConf = async () => {
-    try {
-      await checkFileExist(conf);
-      shell.openItem(conf);
-    } catch (e) {
-      message.error(e);
-    }
-  };
-
   const edit = () => {
     router.location('/', { edit: true });
   };
 
-  const open = async () => {
-    try {
-      await checkFileExist(path.dirname(nginx));
-      shell.showItemInFolder(nginx);
-    } catch (e) {
-      message.error('目录不存在');
-    }
-  };
+  const editConf = preventMutilClick(async () => {
+    await checkFileExist(conf, 'conf文件不存在');
+    shell.openItem(conf);
+  });
+
+  const open = preventMutilClick(async () => {
+    await checkFileExist(path.dirname(nginx), '目录不存在');
+    shell.showItemInFolder(nginx);
+  });
 
   useWatch(() => {
     started && reload();
   }, [conf, started]);
 
   return (
-    <Spin spinning={loadings.$checkStart}>
+    <Spin spinning={loadings.$checkStart} wrapperClassName={style.spin}>
       <Card
         className={style.card}
         bordered={false}
